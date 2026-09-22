@@ -18,7 +18,17 @@ type PropertyController struct {
 // }
 
 func (c *PropertyController) Get() {
-	response, err := c.Service.GetResponses()
+	response, err := c.Service.GetResponses(
+		minPrice ,
+		maxPrice ,
+		minStar ,
+		minReviewScore ,
+		minReviews ,
+		// published ,
+		propertyType ,
+		feed ,
+		minBedroom 
+	)
 
 	if err != nil {
 		c.Ctx.ResponseWriter.WriteHeader(400)

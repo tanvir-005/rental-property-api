@@ -1,8 +1,11 @@
 package services
 
-import "rental-property-api/models"
-import "os"
-import "encoding/json"
+import (
+	"encoding/json"
+	"os"
+	"rental-property-api/models"
+)
+
 // import "errors"
 
 type PropertyService struct {
@@ -39,14 +42,37 @@ func LoadJSON() (*PropertyService, error) {
 // 	return s.properties
 // }
 
-func (s *PropertyService) GetResponses() (models.RentalProperties, error) {
+func (s *PropertyService) GetResponses(
+	minPrice float64,
+	maxPrice float64,
+	minStar int,
+	minReviewScore float64,
+	minReviews int,
+	// published bool,
+	propertyType string,
+	feed int,
+	minBedroom int,
+) (models.RentalProperties, error) {
 
 	totalProperty := len(s.properties)
 	responses := make([]models.RentalProperty, 0)
 
 	for i := 0; i < totalProperty; i++ {
 		property := s.properties[i]
-	
+
+		if (property.USDPrice < minPrice) ||
+			(maxPrice != 0 && property.USDPrice > maxPrice) ||
+			(minStar != 0 && property.StarRating < minStar) ||
+			(minReviewScore != 0 && property.ReviewScoreGeneral < minReviewScore) ||
+			(minReviews > 0 && property.NumberOfReview < minReviews) ||
+			// (published != nil && property.Published != *published) ||
+			(propertyType != "" && property.PropertyTypeCategory != propertyType) ||
+			(feed != 0 && property.Feed != feed) ||
+			(minBedroom > 0 && property.BedroomCount < minBedroom) {
+
+			continue
+		}
+
 		var breadcrumbs []models.Breadcrumb
 
 		err := json.Unmarshal([]byte(property.Categories), &breadcrumbs)
@@ -98,12 +124,9 @@ func (s *PropertyService) GetResponses() (models.RentalProperties, error) {
 		responses = append(responses, response)
 	}
 
-	// shorter data to visualize easily
-	// responses = responses[:2] 
-
 	return models.RentalProperties{
 		Result: models.Result{
-			Count: totalProperty,
+			Count: len(responses),
 			Items: responses,
 		},
 	}, nil
