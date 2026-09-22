@@ -31,5 +31,11 @@
 
 package routers
 
-func init() {
+import (
+	beego "github.com/beego/beego/v2/server/web"
+	"rental-property-api/controllers"
+)
+
+func RegisterRoutes(controller *controllers.PropertyController) {
+	beego.Router("/v1/properties", controller)
 }

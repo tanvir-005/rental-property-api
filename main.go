@@ -1,13 +1,15 @@
 package main
 
 import (
-	beego "github.com/beego/beego/v2/server/web"
-	_ "rental-property-api/routers"
-	"rental-property-api/services"
 	"rental-property-api/controllers"
+	"rental-property-api/routers"
+	"rental-property-api/services"
+
+	beego "github.com/beego/beego/v2/server/web"
 )
 
 func main() {
+
 	service, err := services.LoadJSON()
 	if err != nil {
 		panic(err)
@@ -18,7 +20,8 @@ func main() {
 		Service: service,
 	}
 
-	_ = controller // temporary to get out of error
+	// _ = controller // temporary to get out of error
+	routers.RegisterRoutes(controller)
 
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true

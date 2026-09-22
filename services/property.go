@@ -30,3 +30,8 @@ func LoadJSON() (*PropertyService, error) {
 		properties: properties,
 	}, nil
 }
+
+func (s *PropertyService) GetProperties() []models.SourceProperty {
+	// we are returning the slices of properties
+	return s.properties
+}
