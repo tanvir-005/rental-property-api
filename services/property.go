@@ -6,15 +6,15 @@ import "encoding/json"
 
 type PropertyService struct {
 	// json had the array, so we made slices of structs
-	properties [] models.SourceProperty
+	properties []models.SourceProperty
 }
 
-func LoadJSON() *PropertyService {
+func LoadJSON() (*PropertyService, error) {
 	// Read the json
 	data, err := os.ReadFile("data/rental_properties.json")
 	if err != nil {
 		// couldn't read
-		return nil
+		return nil, err
 	}
 
 	// the structure of json
@@ -22,11 +22,11 @@ func LoadJSON() *PropertyService {
 	err2 := json.Unmarshal(data, &properties)
 	if err2 != nil {
 		// couldn't unmarshal
-		return nil
+		return nil, err2
 	}
 
 	// create a struct and return its address
 	return &PropertyService{
 		properties: properties,
-	}
+	}, nil
 }
