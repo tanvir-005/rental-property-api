@@ -39,7 +39,7 @@ func LoadJSON() (*PropertyService, error) {
 // 	return s.properties
 // }
 
-func (s *PropertyService) GetResponses() (models.Response, error) {
+func (s *PropertyService) GetResponses() (models.RentalProperties, error) {
 
 	totalProperty := len(s.properties)
 	responses := make([]models.RentalProperty, 0)
@@ -101,7 +101,7 @@ func (s *PropertyService) GetResponses() (models.Response, error) {
 	// shorter data to visualize easily
 	// responses = responses[:2] 
 
-	return models.Response{
+	return models.RentalProperties{
 		Result: models.Result{
 			Count: totalProperty,
 			Items: responses,

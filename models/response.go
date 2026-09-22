@@ -59,6 +59,6 @@ type Result struct {
 	Items []RentalProperty `json:"Items"`
 }
 
-type Response struct {
+type RentalProperties struct {
 	Result Result `json:"Result"`
 }
