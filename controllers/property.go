@@ -10,8 +10,8 @@ type PropertyController struct {
 }
 
 func (c *PropertyController) Get() {
-	properties := c.Service.GetProperties()
+	responses := c.Service.GetResponses()
 
-	c.Data["json"] = properties
+	c.Data["json"] = responses
 	c.ServeJSON()
 }

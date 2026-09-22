@@ -1,11 +1,11 @@
 package models
 
 type LonLat struct {
-	Coordinates []float64 `json:"coordinates"`
+	Coordinates [2]float64 `json:"coordinates"`
 }
 
 // The format of data we expect from json (json has an array of these)
-type SourceProperty struct {
+type RentalProperty struct {
 	ID                   string   `json:"id"`
 	Feed                 int      `json:"feed"`
 	Country              string   `json:"country"`
