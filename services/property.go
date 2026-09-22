@@ -116,7 +116,7 @@ func (s *PropertyService) GetResponses(page int, pageSize int) (models.ListRespo
 
 	return models.ListResponse{
 		Result: models.Result{
-			Count: end - start + 1,
+			Count: end - start,
 			Items: responses,
 		},
 	}, nil
