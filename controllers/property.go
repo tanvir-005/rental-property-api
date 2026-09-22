@@ -2,7 +2,7 @@ package controllers
 
 import "rental-property-api/services"
 import beego "github.com/beego/beego/v2/server/web"
-import "strconv"
+// import "strconv"
 
 type PropertyController struct {
 	beego.Controller
@@ -18,17 +18,7 @@ type PropertyController struct {
 // }
 
 func (c *PropertyController) Get() {
-	page, err := strconv.Atoi(c.GetString("page"))
-	if err != nil {
-		page = 1
-	}
-
-	pageSize, err := strconv.Atoi(c.GetString("page_size"))
-	if err != nil {
-		pageSize = 10
-	}
-
-	response, err := c.Service.GetResponses(page, pageSize)
+	response, err := c.Service.GetResponses()
 
 	if err != nil {
 		c.Ctx.ResponseWriter.WriteHeader(400)

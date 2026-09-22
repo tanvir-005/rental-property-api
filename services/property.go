@@ -3,11 +3,11 @@ package services
 import "rental-property-api/models"
 import "os"
 import "encoding/json"
-import "errors"
+// import "errors"
 
 type PropertyService struct {
 	// json had the array, so we made slices of structs
-	properties []models.RentalProperty
+	properties []models.RentalPropertySource
 }
 
 func LoadJSON() (*PropertyService, error) {
@@ -19,7 +19,7 @@ func LoadJSON() (*PropertyService, error) {
 	}
 
 	// the structure of json
-	var properties []models.RentalProperty
+	var properties []models.RentalPropertySource
 	err2 := json.Unmarshal(data, &properties)
 	if err2 != nil {
 		// couldn't unmarshal
@@ -32,32 +32,19 @@ func LoadJSON() (*PropertyService, error) {
 	}, nil
 }
 
-func (s *PropertyService) GetProperties() []models.RentalProperty {
-	// we are returning the slices of properties
+// func (s *PropertyService) GetProperties() []models.RentalProperty {
+// 	// we are returning the slices of properties
 
-	// return s.properties[:2]
-	return s.properties
-}
+// 	// return s.properties[:2]
+// 	return s.properties
+// }
 
-func (s *PropertyService) GetResponses(page int, pageSize int) (models.ListResponse, error) {
-
-	if page < 1 || pageSize < 1 {
-		return models.ListResponse{}, errors.New("Impossible Page or Size")
-	}
+func (s *PropertyService) GetResponses() (models.Response, error) {
 
 	totalProperty := len(s.properties)
-	totalPages := (totalProperty + pageSize - 1) / pageSize
+	responses := make([]models.RentalProperty, 0)
 
-	if page > totalPages {
-		return models.ListResponse{}, errors.New("Page doesn't exist")
-	}
-
-	start := pageSize * (page - 1)
-	end := min(start + pageSize, totalProperty)
-
-	responses := make([]models.Response, 0, end - start)
-
-	for i := start; i < end; i++ {
+	for i := 0; i < totalProperty; i++ {
 		property := s.properties[i]
 	
 		var breadcrumbs []models.Breadcrumb
@@ -67,7 +54,7 @@ func (s *PropertyService) GetResponses(page int, pageSize int) (models.ListRespo
 			breadcrumbs = []models.Breadcrumb{}
 		}
 
-		response := models.Response{
+		response := models.RentalProperty{
 			ID:        property.ID,
 			Feed:      property.Feed,
 			Published: property.Published,
@@ -114,9 +101,9 @@ func (s *PropertyService) GetResponses(page int, pageSize int) (models.ListRespo
 	// shorter data to visualize easily
 	// responses = responses[:2] 
 
-	return models.ListResponse{
+	return models.Response{
 		Result: models.Result{
-			Count: end - start,
+			Count: totalProperty,
 			Items: responses,
 		},
 	}, nil

@@ -1,7 +1,7 @@
 package models
 
 // The structure of our response (has nested structs)
-type Response struct {
+type RentalProperty struct {
 	ID        string   `json:"ID"`
 	Feed      int      `json:"Feed"`
 	Published bool     `json:"Published"`
@@ -54,11 +54,11 @@ type Image struct {
 	Images []string `json:"Images"`
 }
 
-type ListResponse struct {
-	Result Result `json:"Result"`
-}
-
 type Result struct {
 	Count int        `json:"Count"`
-	Items []Response `json:"Items"`
+	Items []RentalProperty `json:"Items"`
+}
+
+type Response struct {
+	Result Result `json:"Result"`
 }

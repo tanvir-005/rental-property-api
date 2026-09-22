@@ -5,7 +5,7 @@ type LonLat struct {
 }
 
 // The format of data we expect from json (json has an array of these)
-type RentalProperty struct {
+type RentalPropertySource struct {
 	ID                   string   `json:"id"`
 	Feed                 int      `json:"feed"`
 	Country              string   `json:"country"`
