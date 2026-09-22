@@ -1,54 +1,32 @@
 package models
 
-type Response struct {
-	ID        string   `json:"ID"`
-	Feed      int      `json:"Feed"`
-	Published bool     `json:"Published"`
-	GeoInfo   GeoInfo  `json:"GeoInfo"`
-	Property  Property `json:"Property"`
+type LonLat struct {
+	Coordinates []float64 `json:"coordinates"`
 }
 
-type GeoInfo struct {
-	Breadcrumbs []Breadcrumb `json:"Breadcrumbs"`
-	City        string       `json:"City"`
-	Country     string       `json:"Country"`
-	CountryCode string       `json:"CountryCode"`
-	Name        string       `json:"Name"`
-	LocationID  string       `json:"LocationID"`
-	Lat         float64      `json:"Lat"`
-	Lon         float64      `json:"Lon"`
-	State       string       `json:"State"`
-	StateAbbr   *string      `json:"StateAbbr"`
-}
-
-type Breadcrumb struct {
-	LocationID string   `json:"LocationID"`
-	Name       string   `json:"Name"`
-	Type       string   `json:"Type"`
-	Slug       string   `json:"Slug"`
-	Display    []string `json:"Display"`
-}
-
-type Property struct {
-	Amenities    []string `json:"Amenities"`
-	Name         string   `json:"Name"`
-	Slug         string   `json:"Slug"`
-	PropertyType string   `json:"PropertyType"`
-	Price        float64  `json:"Price"`
-	ReviewScore  float64  `json:"ReviewScore"`
-	StarRating   int      `json:"StarRating"`
-	Counts       Counts   `json:"Counts"`
-	Image        Image    `json:"Image"`
-}
-
-type Counts struct {
-	Bathroom  int `json:"Bathroom"`
-	Bedroom   int `json:"Bedroom"`
-	Reviews   int `json:"Reviews"`
-	Occupancy int `json:"Occupancy"`
-}
-
-type Image struct {
-	Count  int      `json:"Count"`
-	Images []string `json:"Images"`
+type SourceProperty struct {
+	ID                   string   `json:"id"`
+	Feed                 int      `json:"feed"`
+	Country              string   `json:"country"`
+	CountryCode          string   `json:"country_code"`
+	State                string   `json:"state"`
+	StateAbbr            *string  `json:"state_abbr"`
+	City                 string   `json:"city"`
+	Display              string   `json:"display"`
+	LocationID           string   `json:"location_id"`
+	PropertyName         string   `json:"property_name"`
+	PropertySlug         string   `json:"property_slug"`
+	PropertyTypeCategory string   `json:"property_type_category"`
+	USDPrice             float64  `json:"usd_price"`
+	Occupancy            int      `json:"occupancy"`
+	BedroomCount         int      `json:"bedroom_count"`
+	BathroomCount        int      `json:"bathroom_count"`
+	NumberOfReview       int      `json:"number_of_review"`
+	ReviewScoreGeneral   float64  `json:"review_score_general"`
+	StarRating           int      `json:"star_rating"`
+	AmenityCategories    []string `json:"amenity_categories"`
+	LonLat               LonLat   `json:"lonlat"`
+	Categories           string   `json:"categories"`
+	Published            bool     `json:"published"`
+	Images               []string `json:"images"`
 }
