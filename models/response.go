@@ -1,5 +1,6 @@
 package models
 
+// The structure of our response (has nested structs)
 type Response struct {
 	ID        string   `json:"ID"`
 	Feed      int      `json:"Feed"`

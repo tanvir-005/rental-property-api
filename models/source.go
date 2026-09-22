@@ -4,6 +4,7 @@ type LonLat struct {
 	Coordinates []float64 `json:"coordinates"`
 }
 
+// The format of data we expect from json (json has an array of these)
 type SourceProperty struct {
 	ID                   string   `json:"id"`
 	Feed                 int      `json:"feed"`
