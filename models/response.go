@@ -53,3 +53,12 @@ type Image struct {
 	Count  int      `json:"Count"`
 	Images []string `json:"Images"`
 }
+
+type ListResponse struct {
+	Result Result `json:"Result"`
+}
+
+type Result struct {
+	Count int        `json:"Count"`
+	Items []Response `json:"Items"`
+}
