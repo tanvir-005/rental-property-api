@@ -54,12 +54,17 @@ func (s *PropertyService) GetResponses(
 	feed int,
 	minBedroom int,
 	amenities [] string,
+	limit int,
 ) (models.RentalProperties, error) {
 
 	totalProperty := len(s.properties)
 	responses := make([]models.RentalProperty, 0)
-
+	taken := 0
 	for i := 0; i < totalProperty; i++ {
+		if taken == limit {
+			break
+		}
+		
 		property := s.properties[i]
 
 		// we will decide if we'd block this property or not
@@ -175,6 +180,7 @@ func (s *PropertyService) GetResponses(
 		}
 
 		responses = append(responses, response)
+		taken++
 	}
 
 	return models.RentalProperties{

@@ -65,6 +65,11 @@ func (c *PropertyController) Get() {
 		amenities = strings.Split(values[0], ",")
 	}
 
+	limit := math.MaxInt
+	if _, ok := queryParameters["limit"]; ok {
+		limit, _ = c.GetInt("limit")
+	}
+
 	response, err := c.Service.GetResponses(
 		minPrice,
 		maxPrice,
@@ -76,6 +81,7 @@ func (c *PropertyController) Get() {
 		feed,
 		minBedroom,
 		amenities,
+		limit,
 	)
 
 	if err != nil {
