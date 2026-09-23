@@ -15,86 +15,153 @@ type PropertyController struct {
 	Service *services.PropertyService
 }
 
-// func (c *PropertyController) Get() {
-// 	responses := c.Service.GetResponses()
+func (c *PropertyController) InvalidQueryError(message string) {
+	c.Ctx.ResponseWriter.WriteHeader(400)
 
-// 	c.Data["json"] = responses
-// 	c.ServeJSON()
-// }
+	c.Data["json"] = map[string]string{
+		"Error": message,
+	}
+
+	c.ServeJSON()
+}
 
 func (c *PropertyController) Get() {
 	queryParameters := c.Ctx.Request.URL.Query()
 
 	minPrice, maxPrice, minStar, minReviewScore, minReviews, published, propertyType, feed, minBedroom := 0.0, math.MaxFloat64, 0, 0.0, 0, -1, "not-mentioned", -1, 0
+	allgood := true
 
 	if _, ok := queryParameters["min_price"]; ok {
-		minPrice, _ = c.GetFloat("min_price")
+		var err error
+		minPrice, err = c.GetFloat("min_price")
+		if err != nil || minPrice < 0{
+			c.InvalidQueryError("Invalid min_price")
+			allgood = false
+		}
 	} 
+	
 	if _, ok := queryParameters["max_price"]; ok {
-		maxPrice, _ = c.GetFloat("max_price")
+		var err error
+		maxPrice, err = c.GetFloat("max_price")
+		if err != nil || maxPrice < minPrice{
+			c.InvalidQueryError("Invalid max_price")
+			allgood = false
+		}
 	}
+
 	if _, ok := queryParameters["min_star_rating"]; ok {
-		minStar, _ = c.GetInt("min_star_rating")
+		var err error
+		minStar, err = c.GetInt("min_star_rating")
+		if err != nil || minStar < 0{
+			c.InvalidQueryError("invalid min_star_rating")
+			allgood = false
+		}
 	}
+
 	if _, ok := queryParameters["min_review_score"]; ok {
-		minReviewScore, _ = c.GetFloat("min_review_score")
+		var err error
+		minReviewScore, err = c.GetFloat("min_review_score")
+		if err != nil || minReviewScore < 0.0{
+			c.InvalidQueryError("Invalid min_review_score")
+			allgood = false
+		}
 	}
+
 	if _, ok := queryParameters["min_reviews"]; ok {
-		minReviews, _ = c.GetInt("min_reviews")
+		var err error	
+		minReviews, err = c.GetInt("min_reviews")
+		if err != nil || minReviews < 0{
+			c.InvalidQueryError("Invalid min_reviews")
+			allgood = false
+		}
 	}
+
 	if _, ok := queryParameters["published"]; ok {
-		val, _ := c.GetBool("published")
+		var err error
+		val, err := c.GetBool("published")
+		if err != nil {
+			c.InvalidQueryError("Invalid published")
+			allgood = false
+		}
 		if val {
 			published = 1
 		} else {
 			published = 0
 		}
 	}
+
 	if _, ok := queryParameters["property_type"]; ok {
 		propertyType = c.GetString("property_type")
+		if propertyType == "" {
+			c.InvalidQueryError("Invalid property_type")
+			allgood = false
+		}
 	}
+
 	if _, ok := queryParameters["feed"]; ok {
-		feed, _ = c.GetInt("feed")
+		var err error
+		feed, err = c.GetInt("feed")
+		if err != nil {
+			c.InvalidQueryError("Invalid feed")
+			allgood = false
+		}
 	}
+	
 	if _, ok := queryParameters["min_bedroom"]; ok {
-		minBedroom, _ = c.GetInt("min_bedroom")
+		var err error
+		minBedroom, err = c.GetInt("min_bedroom")
+		if err != nil || minBedroom < 1{
+			c.InvalidQueryError("Invalid min_bedroom")
+			allgood = false
+		}
 	}
 
 	var amenities []string
 	if values, ok := queryParameters["amenities"]; ok {
 		amenities = strings.Split(values[0], ",")
+		if amenities[0] == "" {
+			c.InvalidQueryError("No mentioned aminities")
+			allgood = false
+		}
 	}
 
 	limit := math.MaxInt
 	if _, ok := queryParameters["limit"]; ok {
-		limit, _ = c.GetInt("limit")
-	}
-
-	response, err := c.Service.GetResponses(
-		minPrice,
-		maxPrice,
-		minStar,
-		minReviewScore,
-		minReviews,
-		published,
-		propertyType,
-		feed,
-		minBedroom,
-		amenities,
-		limit,
-	)
-
-	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(400)
-		c.Data["json"] = map[string]string{
-			"error": err.Error(),
+		var err error
+		limit, err = c.GetInt("limit")
+		if err != nil || limit < 1{
+			c.InvalidQueryError("Invalid limit")
+			allgood = false
 		}
-		c.ServeJSON()
-		return
 	}
 
-	c.Data["json"] = response
-	c.ServeJSON()
+	if allgood {
+		response, err := c.Service.GetResponses(
+			minPrice,
+			maxPrice,
+			minStar,
+			minReviewScore,
+			minReviews,
+			published,
+			propertyType,
+			feed,
+			minBedroom,
+			amenities,
+			limit,
+		)
+	
+		if err != nil {
+			c.Ctx.ResponseWriter.WriteHeader(400)
+			c.Data["json"] = map[string]string{
+				"error": err.Error(),
+			}
+			c.ServeJSON()
+			return
+		}
+	
+		c.Data["json"] = response
+		c.ServeJSON()
+	}
 }
 
 func (c *PropertyController) GetByID() {
