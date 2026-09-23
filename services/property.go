@@ -5,6 +5,7 @@ import (
 	"os"
 	"rental-property-api/models"
 	// "fmt"
+	"errors"
 )
 
 // import "errors"
@@ -64,7 +65,7 @@ func (s *PropertyService) GetResponses(
 		if taken == limit {
 			break
 		}
-		
+
 		property := s.properties[i]
 
 		// we will decide if we'd block this property or not
@@ -83,6 +84,8 @@ func (s *PropertyService) GetResponses(
 		if property.ReviewScoreGeneral < minReviewScore {
 			block = true
 		}
+
+		
 		if property.NumberOfReview < minReviews {
 			block = true
 		}
@@ -95,11 +98,11 @@ func (s *PropertyService) GetResponses(
 		if (published != -1) && (property.Published != p) {
 			block = true
 		}
-
+		
 		if (propertyType != "not-mentioned") && (property.PropertyTypeCategory != propertyType) {
 			block = true
 		}
-
+		
 		if feed != -1 && (property.Feed != feed) {
 			block = true
 		}
@@ -107,7 +110,7 @@ func (s *PropertyService) GetResponses(
 		if property.BedroomCount < minBedroom {
 			block = true
 		}
-
+		
 		
 		// amenities
 		exists := make(map[string]bool)
@@ -121,16 +124,15 @@ func (s *PropertyService) GetResponses(
 				break
 			}
 		}
-		if !found {
+		if !found && len(amenities) > 0{
 			block = true
 		}
-
 
 		// if block is true by any of the conditions above, we should not include this property to response
 		if block {
 			continue
 		}
-
+		
 		var breadcrumbs []models.Breadcrumb
 
 		err := json.Unmarshal([]byte(property.Categories), &breadcrumbs)
@@ -189,4 +191,60 @@ func (s *PropertyService) GetResponses(
 			Items: responses,
 		},
 	}, nil
+}
+
+func (s *PropertyService) GetResponseByID(id string) (models.RentalProperty, error) {
+	for _, property := range s.properties {
+		if property.ID == id {
+			var breadcrumbs []models.Breadcrumb
+
+			err := json.Unmarshal([]byte(property.Categories), &breadcrumbs)
+			if err != nil {
+				breadcrumbs = []models.Breadcrumb{}
+			}
+
+			response := models.RentalProperty{
+				ID:        property.ID,
+				Feed:      property.Feed,
+				Published: property.Published,
+
+				GeoInfo: models.GeoInfo{
+					Breadcrumbs: breadcrumbs,
+					City:        property.City,
+					Country:     property.Country,
+					CountryCode: property.CountryCode,
+					Name:        property.Display,
+					LocationID:  property.LocationID,
+					Lat:         property.LonLat.Coordinates[1],
+					Lon:         property.LonLat.Coordinates[0],
+					State:       property.State,
+					StateAbbr:   property.StateAbbr,
+				},
+
+				Property: models.Property{
+					Amenities:    property.AmenityCategories,
+					Name:         property.PropertyName,
+					Slug:         property.PropertySlug,
+					PropertyType: property.PropertyTypeCategory,
+					Price:        property.USDPrice,
+					ReviewScore:  property.ReviewScoreGeneral,
+					StarRating:   property.StarRating,
+
+					Counts: models.Counts{
+						Bathroom:  property.BathroomCount,
+						Bedroom:   property.BedroomCount,
+						Reviews:   property.NumberOfReview,
+						Occupancy: property.Occupancy,
+					},
+
+					Image: models.Image{
+						Count:  len(property.Images),
+						Images: property.Images,
+					},
+				},
+			}
+			return response, nil
+		}
+	}
+	return models.RentalProperty{}, errors.New("Property not found")
 }

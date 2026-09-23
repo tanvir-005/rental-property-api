@@ -96,3 +96,23 @@ func (c *PropertyController) Get() {
 	c.Data["json"] = response
 	c.ServeJSON()
 }
+
+func (c *PropertyController) GetByID() {
+	id := c.Ctx.Input.Param(":id")
+
+	response, err := c.Service.GetResponseByID(id)
+
+	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(404)
+
+		c.Data["json"] = map[string]string{
+			"error": "not found",
+		}
+
+		c.ServeJSON()
+		return
+	}
+
+	c.Data["json"] = response
+	c.ServeJSON()
+}

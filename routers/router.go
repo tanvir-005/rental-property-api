@@ -38,4 +38,5 @@ import (
 
 func RegisterRoutes(controller *controllers.PropertyController) {
 	beego.Router("/v1/properties", controller)
+	beego.Router("/v1/properties/:id", controller, "get:GetByID")
 }
