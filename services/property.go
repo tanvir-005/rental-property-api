@@ -48,7 +48,7 @@ func (s *PropertyService) GetResponses(
 	minStar int,
 	minReviewScore float64,
 	minReviews int,
-	// published bool,
+	published int,
 	propertyType string,
 	feed int,
 	minBedroom int,
@@ -60,16 +60,45 @@ func (s *PropertyService) GetResponses(
 	for i := 0; i < totalProperty; i++ {
 		property := s.properties[i]
 
-		if (property.USDPrice < minPrice) ||
-			(maxPrice != 0 && property.USDPrice > maxPrice) ||
-			(minStar != 0 && property.StarRating < minStar) ||
-			(minReviewScore != 0 && property.ReviewScoreGeneral < minReviewScore) ||
-			(minReviews > 0 && property.NumberOfReview < minReviews) ||
-			// (published != nil && property.Published != *published) ||
-			(propertyType != "" && property.PropertyTypeCategory != propertyType) ||
-			(feed != 0 && property.Feed != feed) ||
-			(minBedroom > 0 && property.BedroomCount < minBedroom) {
+		// we will decide if we'd block this property or not
+		// initially we're saying we won't block
+		block := false
 
+		if property.USDPrice < minPrice {
+			block = true
+		}
+		if property.USDPrice > maxPrice {
+			block = true
+		}
+		if property.StarRating < minStar {
+			block = true
+		}
+		if property.ReviewScoreGeneral < minReviewScore {
+			block = true
+		}
+		if property.NumberOfReview < minReviews {
+			block = true
+		}
+
+		// argument published is int while property.published is bool
+		var p bool = true 
+		if published == 0 {
+			p = false 
+		}
+		if (published != -1) && (property.Published != p) {
+			block = true
+		}
+
+		if feed != -1 && (property.Feed != feed) {
+			block = true
+		}
+
+		if property.BedroomCount < minBedroom {
+			block = true
+		}
+
+		// if block is true by any of the conditions above, we should not include this property to response
+		if block {
 			continue
 		}
 
