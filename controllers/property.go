@@ -4,6 +4,7 @@ import (
 	"math"
 	"rental-property-api/services"
 	beego "github.com/beego/beego/v2/server/web"
+	"strings"
 )
 
 // import "strconv"
@@ -59,6 +60,11 @@ func (c *PropertyController) Get() {
 		minBedroom, _ = c.GetInt("min_bedroom")
 	}
 
+	var amenities []string
+	if values, ok := queryParameters["amenities"]; ok {
+		amenities = strings.Split(values[0], ",")
+	}
+
 	response, err := c.Service.GetResponses(
 		minPrice,
 		maxPrice,
@@ -69,6 +75,7 @@ func (c *PropertyController) Get() {
 		propertyType,
 		feed,
 		minBedroom,
+		amenities,
 	)
 
 	if err != nil {

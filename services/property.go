@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"rental-property-api/models"
+	// "fmt"
 )
 
 // import "errors"
@@ -52,6 +53,7 @@ func (s *PropertyService) GetResponses(
 	propertyType string,
 	feed int,
 	minBedroom int,
+	amenities [] string,
 ) (models.RentalProperties, error) {
 
 	totalProperty := len(s.properties)
@@ -89,6 +91,10 @@ func (s *PropertyService) GetResponses(
 			block = true
 		}
 
+		if (propertyType != "not-mentioned") && (property.PropertyTypeCategory != propertyType) {
+			block = true
+		}
+
 		if feed != -1 && (property.Feed != feed) {
 			block = true
 		}
@@ -96,6 +102,24 @@ func (s *PropertyService) GetResponses(
 		if property.BedroomCount < minBedroom {
 			block = true
 		}
+
+		
+		// amenities
+		exists := make(map[string]bool)
+		for _, aminity := range amenities {
+			exists[aminity] = true
+		}
+		found := false
+		for _, propertyAminity := range property.AmenityCategories {
+			if exists[propertyAminity] == true {
+				found = true 
+				break
+			}
+		}
+		if !found {
+			block = true
+		}
+
 
 		// if block is true by any of the conditions above, we should not include this property to response
 		if block {
