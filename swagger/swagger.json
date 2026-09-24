@@ -1,0 +1,230 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Rental Property API",
+    "version": "1.0.0",
+    "description": "Search and retrieve rental property records with filters for price, rating, amenities, and more."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "paths": {
+    "/v1/properties": {
+      "get": {
+        "summary": "List rental properties",
+        "description": "Returns properties matching optional filter parameters such as min_price, max_price, property_type, feed, amenities, and limit.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "min_price",
+            "schema": { "type": "number" },
+            "description": "Minimum price"
+          },
+          {
+            "in": "query",
+            "name": "max_price",
+            "schema": { "type": "number" },
+            "description": "Maximum price"
+          },
+          {
+            "in": "query",
+            "name": "min_star_rating",
+            "schema": { "type": "integer" },
+            "description": "Minimum star rating"
+          },
+          {
+            "in": "query",
+            "name": "min_review_score",
+            "schema": { "type": "number" },
+            "description": "Minimum review score"
+          },
+          {
+            "in": "query",
+            "name": "min_reviews",
+            "schema": { "type": "integer" },
+            "description": "Minimum number of reviews"
+          },
+          {
+            "in": "query",
+            "name": "published",
+            "schema": { "type": "boolean" },
+            "description": "Filter by published state"
+          },
+          {
+            "in": "query",
+            "name": "property_type",
+            "schema": { "type": "string" },
+            "description": "Property type such as Hotel, House, Apartment, Villa, Resort, or Hostel"
+          },
+          {
+            "in": "query",
+            "name": "feed",
+            "schema": { "type": "integer" },
+            "description": "Feed identifier"
+          },
+          {
+            "in": "query",
+            "name": "min_bedroom",
+            "schema": { "type": "integer" },
+            "description": "Minimum bedroom count"
+          },
+          {
+            "in": "query",
+            "name": "amenities",
+            "schema": { "type": "string" },
+            "description": "Comma-separated amenities list"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer" },
+            "description": "Max number of results"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalProperties"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/properties/{id}": {
+      "get": {
+        "summary": "Get a single property by ID",
+        "description": "Returns a single property matching the requested ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Property ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalProperty"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Property not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RentalProperties": {
+        "type": "object",
+        "properties": {
+          "Result": {
+            "$ref": "#/components/schemas/Result"
+          }
+        }
+      },
+      "Result": {
+        "type": "object",
+        "properties": {
+          "Count": { "type": "integer" },
+          "Items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/RentalProperty" }
+          }
+        }
+      },
+      "RentalProperty": {
+        "type": "object",
+        "properties": {
+          "ID": { "type": "string" },
+          "Feed": { "type": "integer" },
+          "Published": { "type": "boolean" },
+          "GeoInfo": { "$ref": "#/components/schemas/GeoInfo" },
+          "Property": { "$ref": "#/components/schemas/Property" }
+        }
+      },
+      "GeoInfo": {
+        "type": "object",
+        "properties": {
+          "Breadcrumbs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Breadcrumb" }
+          },
+          "City": { "type": "string" },
+          "Country": { "type": "string" },
+          "CountryCode": { "type": "string" },
+          "Name": { "type": "string" },
+          "LocationID": { "type": "string" },
+          "Lat": { "type": "number" },
+          "Lon": { "type": "number" },
+          "State": { "type": "string" },
+          "StateAbbr": { "type": ["string", "null"] }
+        }
+      },
+      "Breadcrumb": {
+        "type": "object",
+        "properties": {
+          "LocationID": { "type": "string" },
+          "Name": { "type": "string" },
+          "Type": { "type": "string" },
+          "Slug": { "type": "string" },
+          "Display": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Property": {
+        "type": "object",
+        "properties": {
+          "Amenities": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "Name": { "type": "string" },
+          "Slug": { "type": "string" },
+          "PropertyType": { "type": "string" },
+          "Price": { "type": "number" },
+          "ReviewScore": { "type": "number" },
+          "StarRating": { "type": "integer" },
+          "Counts": { "$ref": "#/components/schemas/Counts" },
+          "Image": { "$ref": "#/components/schemas/Image" }
+        }
+      },
+      "Counts": {
+        "type": "object",
+        "properties": {
+          "Bathroom": { "type": "integer" },
+          "Bedroom": { "type": "integer" },
+          "Reviews": { "type": "integer" },
+          "Occupancy": { "type": "integer" }
+        }
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "Count": { "type": "integer" },
+          "Images": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
