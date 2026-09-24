@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-
-	service, err := services.LoadJSON()
+	filepath, _ := beego.AppConfig.String("data_file")
+	service, err := services.LoadJSON(filepath)
 	if err != nil {
 		panic(err)
 	}

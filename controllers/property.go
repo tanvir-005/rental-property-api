@@ -92,7 +92,7 @@ func (c *PropertyController) Get() {
 
 	if _, ok := queryParameters["property_type"]; ok {
 		propertyType = c.GetString("property_type")
-		if propertyType == "" {
+		if propertyType == "" || (propertyType != "Hotel" && propertyType != "House" && propertyType != "Apartment" && propertyType != "Villa" && propertyType != "Resort" && propertyType != "Hostel") {
 			c.InvalidQueryError("Invalid property_type")
 			allgood = false
 		}
@@ -101,7 +101,7 @@ func (c *PropertyController) Get() {
 	if _, ok := queryParameters["feed"]; ok {
 		var err error
 		feed, err = c.GetInt("feed")
-		if err != nil {
+		if err != nil || (feed != 11 && feed != 12  && feed != 22 && feed != 24){
 			c.InvalidQueryError("Invalid feed")
 			allgood = false
 		}
@@ -173,7 +173,7 @@ func (c *PropertyController) GetByID() {
 		c.Ctx.ResponseWriter.WriteHeader(404)
 
 		c.Data["json"] = map[string]string{
-			"error": "not found",
+			"Error": "The requested Property was not found!",
 		}
 
 		c.ServeJSON()
