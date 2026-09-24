@@ -32,11 +32,14 @@
 package routers
 
 import (
-	beego "github.com/beego/beego/v2/server/web"
 	"rental-property-api/controllers"
+	beego "github.com/beego/beego/v2/server/web"
 )
 
 func RegisterRoutes(controller *controllers.PropertyController) {
-	beego.Router("/v1/properties", controller)
-	beego.Router("/v1/properties/:id", controller, "get:GetByID")
+	ns := beego.NewNamespace("/v1",
+		beego.NSRouter("/properties", controller, "get:Get"),
+		beego.NSRouter("/properties/:id", controller, "get:GetByID"),
+	)
+	beego.AddNamespace(ns)
 }
